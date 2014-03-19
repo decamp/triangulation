@@ -1,4 +1,4 @@
-<project name="triangle" default="dist" basedir=".">
+<project name="triangulation" default="dist" basedir=".">
 	<description>
     	Builds triangulation library.
     </description>
