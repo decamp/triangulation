@@ -3,8 +3,6 @@
 PLATFORM := osx
 MY_NAME := libtriangulation
 
-export MACOSX_DEPLOYMENT_TARGET=10.6
-
 export CC := llvm-gcc
 export CXX := llvm-g++
 export JAVAC := javac
@@ -17,24 +15,27 @@ export MAKE_LIB ?= g++ -dynamiclib -o
 export INDEX_LIB ?= @echo
 export MAKE ?= make
 
-export ARCH ?= -arch x86_64 -arch i386
+export ARCH ?= -arch x86_64
 
 export SCRATCH_DIR := scratch
 export LIB_PATH := scratch
 export LIB_OUTPUT := ../../lib
 export BIN_OUTPUT := ../../bin
 
+export MACOSX_DEPLOYMENT_TARGET ?= 10.6
+export ARCH ?= -arch x86_64
+export SYS_ROOT ?= /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk
+
+
 DEBUG_CXXFLAGS := -D_REENTRANT -dynamic -fPIC -fno-common -Wall -g3
 DEBUG_LDFLAGS := -D_REENTRANT -dynamic -fPIC -fno-common -Wall -g3
 
 RELEASE_CXXFLAGS := -DTRILIBRARY -D_REENTRANT -dynamic -fPIC -fno-common -Wall -O3 -force_cpusubtype_ALL
-RELEASE_CXXFLAGS := $(RELEASE_CXXFLAGS) -isysroot /Developer/SDKs/MacOSX10.6.sdk
-RELEASE_CXXFLAGS := $(RELEASE_CXXFLAGS) $(ARCH)
+RELEASE_CXXFLAGS := $(RELEASE_CXXFLAGS) -isysroot $(SYS_ROOT) $(ARCH)
 RELEASE_CXXFLAGS := $(RELEASE_CXXFLAGS) -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
 
 RELEASE_LDFLAGS := -DTRILIBRARY -D_REENTRANT -dynamic -fPIC -Wall  
-RELEASE_LDFLAGS := $(RELEASE_LDFLAGS) -Wl,-syslibroot,/Developer/SDKs/MacOSX10.6.sdk 
-RELEASE_LDFLAGS := $(RELEASE_LDFLAGS) $(ARCH)
+RELEASE_LDFLAGS := $(RELEASE_LDFLAGS) -Wl,-syslibroot,$(SYS_ROOT) $(ARCH)
 RELEASE_LDFLAGS := $(RELEASE_LDFLAGS) -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
 
 export CXXFLAGS := $(RELEASE_CXXFLAGS)
@@ -46,19 +47,20 @@ FINAL_TARGET := $(OUTPUT_DIR)/$(MY_NAME).jnilib
 SOURCE_DIRS := src
 LIB_NAMES := 
 INCLUDE_NAMES := 
-EXT_INCLUDES := -I/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Headers
-EXT_LIBS := -framework Carbon -framework JavaVM
+FRAMEWORKS := -framework JavaVM
+EXT_INCLUDES := 
+EXT_LIBS := 
 
 SOURCES := $(foreach dir, $(SOURCE_DIRS), $(wildcard $(dir)/*.cpp))
 C_SOURCES := $(foreach dir, $(SOURCE_DIRS), $(wildcard $(dir)/*.c))
 HEADERS := $(foreach dir, $(SOURCE_DIRS), $(wildcard $(dir)/*.h))
 
-INCLUDES := $(EXT_INCLUDES)
+INCLUDES := $(FRAMEWORKS) $(EXT_INCLUDES)
 INCLUDES := $(INCLUDES) $(foreach dir, $(SOURCE_DIRS), -I$(dir))
 INCLUDES := $(INCLUDES) $(foreach dir, $(INCLUDE_NAMES), -I$(LIB_PATH)/$(dir))
 INCLUDES := $(INCLUDES) $(foreach dir, $(LIB_NAMES), -I$(LIB_PATH)/lib$(dir))
 
-LIBS := $(EXT_LIBS)
+LIBS := $(FRAMEWORKS) $(EXT_LIBS)
 
 OBJECTS := $(patsubst %.cpp, $(SCRATCH_DIR)/%.cpp.o, $(SOURCES))
 OBJECTS := $(OBJECTS) $(patsubst %.c, $(SCRATCH_DIR)/%.c.o, $(C_SOURCES))

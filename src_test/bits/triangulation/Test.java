@@ -10,60 +10,82 @@ public class Test {
 
 
     public static void main( String[] args ) throws Exception {
-        TriangulationData d = TriangulationData.newInstance();
+        test2();
+    }
 
-        DoubleBuffer pin = alloc( 8 * 2 * 8 ).asDoubleBuffer();
-        pin.put( 0 ).put( 0 );
-        pin.put( 1 ).put( 0 );
-        pin.put( 0 ).put( 1 );
-        pin.put( 1 ).put( 1 );
 
-        pin.put( 0.25 ).put( 0.25 );
-        pin.put( 0.75 ).put( 0.25 );
-        pin.put( 0.75 ).put( 0.75 );
-        pin.put( 0.25 ).put( 0.75 );
+
+    static void test1() throws Exception {
+        TriangulationData d = TriangulationData.create();
+    }
+
+
+    static void test2() throws Exception {
+        TriangulationData d = TriangulationData.create();
+
+        ByteBuffer pin = alloc( 8 * 2 * 8 );
+        pin.putDouble( 0 ).putDouble( 0 );
+        pin.putDouble( 1 ).putDouble( 0 );
+        pin.putDouble( 0 ).putDouble( 1 );
+        pin.putDouble( 1 ).putDouble( 1 );
+
+        pin.putDouble( 0.25 ).putDouble( 0.25 );
+        pin.putDouble( 0.75 ).putDouble( 0.25 );
+        pin.putDouble( 0.75 ).putDouble( 0.75 );
+        pin.putDouble( 0.25 ).putDouble( 0.75 );
         pin.flip();
 
-        IntBuffer ein = alloc( 8 * 2 * 4 ).asIntBuffer();
-        ein.put( 0 ).put( 1 );
-        ein.put( 1 ).put( 2 );
-        ein.put( 2 ).put( 3 );
-        ein.put( 3 ).put( 0 );
-        ein.put( 4 ).put( 5 );
-        ein.put( 5 ).put( 6 );
-        ein.put( 6 ).put( 7 );
-        ein.put( 7 ).put( 4 );
+        ByteBuffer markin = alloc( 8 * 4 );
+        for( int i = 0; i < 4; i++ ) {
+            markin.putInt( 3 );
+        }
+        for( int i = 0; i < 4; i++ ) {
+            markin.putInt( 1 );
+        }
+        markin.flip();
+
+
+        ByteBuffer ein  = alloc( 8 * 2 * 4 );
+        ByteBuffer emin = alloc( 8 * 4 );
+        ein.putInt( 0 ).putInt( 1 ); emin.putInt( 1 );
+        ein.putInt( 1 ).putInt( 2 ); emin.putInt( 1 );
+        ein.putInt( 2 ).putInt( 3 ); emin.putInt( 1 );
+        ein.putInt( 3 ).putInt( 0 ); emin.putInt( 1 );
+        ein.putInt( 4 ).putInt( 5 ); emin.putInt( 1 );
+        ein.putInt( 5 ).putInt( 6 ); emin.putInt( 1 );
+        ein.putInt( 6 ).putInt( 7 ); emin.putInt( 1 );
+        ein.putInt( 7 ).putInt( 4 ); emin.putInt( 1 );
         ein.flip();
 
-        DoubleBuffer hin = alloc( 8 * 2 * 1 ).asDoubleBuffer();
-        hin.put( 0.5 ).put( 0.4445 );
+        ByteBuffer hin = alloc( 8 * 2 * 1 );
+        hin.putDouble( 0.5 ).putDouble( 0.4445 );
         hin.flip();
 
         d.setPoints( pin );
         d.setSegments( ein );
-        // d.setHoles(hin);
+        d.setHoles( hin );
 
+//        ImagePanel.showImage( TriangulationRenderer.render( d, 1500, 1500 ) );
 
         Triangulation t = new Triangulation();
         t.verbose( true );
         t.planarStraightLineGraph( true );
-        TriangulationData out = TriangulationData.newInstance();
+        //t.computeEdges( true );
 
+        TriangulationData out = TriangulationData.create();
         t.triangulate( d, out );
 
-        System.out.println( out.getPointCount() + "\t" + out.getTriangleCount() );
+        System.out.println( out.pointCount() + "\t" + out.triangleCount() );
+        ByteBuffer ind = out.copyTriangles();
 
-        IntBuffer ind = alloc( out.getTriangleCount() * 3 * 4 ).asIntBuffer();
-        out.getTriangles( ind );
-        ind.flip();
-
-        while( ind.remaining() >= 3 ) {
-            System.out.format( "%d  %d  %d\n", ind.get(), ind.get(), ind.get() );
+        while( ind.remaining() >= 24 ) {
+            System.out.format( "%d  %d  %d\n", ind.getInt(), ind.getInt(), ind.getInt() );
         }
 
-        d.dispose();
-        out.dispose();
+        ImagePanel.showImage( TriangulationRenderer.render( out, 1500, 1500 ) );
 
+        //d.dispose();
+        //out.dispose();
     }
 
 

@@ -1,148 +1,150 @@
 #include "TriangulationData.h"
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stddef.h>
+#include <stdio.h>
 
 #define REAL double
 #include "triangle.h"
 
-JNIEXPORT jlong JNICALL Java_bits_triangulation_TriangulationData_alloc
-(JNIEnv* env, jclass clazz)
+
+JNIEXPORT void JNICALL Java_bits_triangulation_TriangulationData_nTriangulate
+(JNIEnv *env, jclass clazz, jlong inPtr, jstring flags, jlong outPtr)
 {
-	struct triangulateio* s = (struct triangulateio*)calloc(1,sizeof(struct triangulateio));
+	struct triangulateio* sin  = *(struct triangulateio**)&inPtr;
+	struct triangulateio* sout = *(struct triangulateio**)&outPtr;	
+	char* fl = (char*)(*env)->GetStringUTFChars(env, flags, 0);
+	triangulate(fl, sin, sout, 0);
+	(*env)->ReleaseStringUTFChars( env, flags, fl );
+    fflush( stdout );
+}
+
+
+JNIEXPORT jlong JNICALL Java_bits_triangulation_TriangulationData_nAlloc
+(JNIEnv *env, jclass clazz)
+{
+	struct triangulateio* s = (struct triangulateio*)calloc( 1, sizeof(struct triangulateio) );
 	return *(jlong*)&s;
 }
 
 
-
-JNIEXPORT void JNICALL Java_bits_triangulation_TriangulationData_free
-(JNIEnv* env, jclass clazz, jlong ptr, jboolean freePoints, jboolean freeSegs, jboolean freeTris)
+JNIEXPORT void JNICALL Java_bits_triangulation_TriangulationData_nFree
+(JNIEnv *env, jclass clazz, jlong ptr)
 {
-	struct triangulateio* s = *(struct triangulateio**)&ptr;
-	
-	if(freePoints && s->pointlist) {
-		trifree(s->pointlist);
-		s->pointlist = 0;
-	}
-	
-	if(freeSegs && s->segmentlist) {
-		trifree(s->segmentlist);
-		s->segmentlist = 0;
-	}
-	
-	if(freeTris && s->trianglelist) {
-		trifree(s->trianglelist);
-		s->trianglelist = 0;
-	}
-	
-	if(s->edgelist) {
-		trifree(s->edgelist);
-		s->edgelist = 0;
-	}
-	
-	free(s);
+    free( *(void**)&ptr );
 }
 
 
-JNIEXPORT void JNICALL Java_bits_triangulation_TriangulationData_setPoints
-(JNIEnv* env, jclass clazz, jlong ptr, jobject buf, jint pos, jint len)
+JNIEXPORT jint JNICALL Java_bits_triangulation_TriangulationData_nGetInt
+(JNIEnv *env, jclass clazz, jlong ptr)
 {
-	struct triangulateio* s = *(struct triangulateio**)&ptr;
-	REAL* vals = (REAL*)(*env)->GetDirectBufferAddress(env, buf);
-	
-	s->pointlist      = vals + pos;
-	s->numberofpoints = len;
+    return **(jint**)&ptr;
+}
+
+JNIEXPORT void JNICALL Java_bits_triangulation_TriangulationData_nSetInt
+(JNIEnv *env, jclass clazz, jlong ptr, jint val)
+{
+    **(jint**)&ptr = val;
+}
+
+JNIEXPORT jlong JNICALL Java_bits_triangulation_TriangulationData_nGetLong
+(JNIEnv *env, jclass clazz, jlong ptr)
+{
+    return **(jlong**)&ptr;
+}
+
+JNIEXPORT void JNICALL Java_bits_triangulation_TriangulationData_nSetLong
+(JNIEnv *env, jclass clazz, jlong ptr, jlong val)
+{
+    **(jlong**)&ptr = val;
 }
 
 
-JNIEXPORT void JNICALL Java_bits_triangulation_TriangulationData_setSegments
-(JNIEnv* env, jclass clazz, jlong ptr, jobject buf, jint pos, jint len)
+JNIEXPORT jfloat JNICALL Java_bits_triangulation_TriangulationData_nGetFloat
+(JNIEnv *env, jclass clazz, jlong ptr)
 {
-	struct triangulateio* s = *(struct triangulateio**)&ptr;
-	int* vals = (int*)(*env)->GetDirectBufferAddress(env, buf);
-	
-	s->segmentlist      = vals + pos;
-	s->numberofsegments = len;
+    return **(jfloat**)&ptr;
 }
 
 
-
-JNIEXPORT void JNICALL Java_bits_triangulation_TriangulationData_setHoles
-(JNIEnv* env, jclass clazz, jlong ptr, jobject buf, jint pos, jint len)
+JNIEXPORT void JNICALL Java_bits_triangulation_TriangulationData_nSetFloat
+(JNIEnv *env, jclass clazz, jlong ptr, jfloat val)
 {
-	struct triangulateio* s = *(struct triangulateio**)&ptr;
-	REAL* vals = (REAL*)(*env)->GetDirectBufferAddress(env, buf);
-	
-	s->holelist      = vals + pos;
-	s->numberofholes = len;
+    **(jfloat**)&ptr = val;
 }
 
 
-JNIEXPORT jint JNICALL Java_bits_triangulation_TriangulationData_getPointCount
-(JNIEnv* env, jclass clazz, jlong ptr)
+JNIEXPORT jdouble JNICALL Java_bits_triangulation_TriangulationData_nGetDouble
+(JNIEnv *env, jclass clazz, jlong ptr)
 {
-	return (**(struct triangulateio**)&ptr).numberofpoints;
-}
-
-JNIEXPORT jint JNICALL Java_bits_triangulation_TriangulationData_getPoints
-(JNIEnv* env, jclass clazz, jlong ptr, jobject buf, jint pos)
-{
-	struct triangulateio* s = *(struct triangulateio**)&ptr;
-	REAL* vals = (REAL*)(*env)->GetDirectBufferAddress(env, buf);
-	
-	memcpy(vals + pos, s->pointlist + pos, s->numberofpoints * 2 * sizeof(REAL));
-	return s->numberofpoints;
+    return **(jdouble**)&ptr;
 }
 
 
-JNIEXPORT jint JNICALL Java_bits_triangulation_TriangulationData_getTriangleCount
-(JNIEnv* env, jclass clazz, jlong ptr)
+JNIEXPORT void JNICALL Java_bits_triangulation_TriangulationData_nSetDouble
+(JNIEnv *env, jclass clazz, jlong ptr, jdouble val)
 {
-	return (**(struct triangulateio**)&ptr).numberoftriangles;	
-}
-
-
-JNIEXPORT jint JNICALL Java_bits_triangulation_TriangulationData_getTriangles
-(JNIEnv* env, jclass clazz, jlong ptr, jobject buf, jint pos)
-{
-	struct triangulateio* s = *(struct triangulateio**)&ptr;
-	int* vals = (int*)(*env)->GetDirectBufferAddress(env, buf);
-	
-	memcpy(vals + pos, s->trianglelist, s->numberoftriangles * 3 * sizeof(int));
-	return s->numberoftriangles;
-}
-
-
-JNIEXPORT jint JNICALL Java_bits_triangulation_TriangulationData_getEdgeCount
-(JNIEnv* env, jclass clazz, jlong ptr)
-{
-	return (**(struct triangulateio**)&ptr).numberofedges;
-}
-
-
-JNIEXPORT jint JNICALL Java_bits_triangulation_TriangulationData_getEdges
-(JNIEnv* env, jclass clazz, jlong ptr, jobject buf, jint pos)
-{
-	struct triangulateio* s = *(struct triangulateio**)&ptr;
-	int* vals = (int*)(*env)->GetDirectBufferAddress(env, buf);
-	
-	memcpy(vals + pos, s->edgelist, s->numberofedges * 2 * sizeof(int));
-	return s->numberofedges;
+    **(jdouble**)&ptr = val;
 }
 
 
 
-
-JNIEXPORT void JNICALL Java_bits_triangulation_TriangulationData_triangulate
-(JNIEnv* env, jclass clazz, jlong inPtr, jstring flags, jlong outPtr)
+JNIEXPORT void JNICALL Java_bits_triangulation_TriangulationData_nSetBuffer
+(JNIEnv *env, jclass clazz, jlong ptr, jobject buf)
 {
-	struct triangulateio* sin  = *(struct triangulateio**)&inPtr;	
-	struct triangulateio* sout = *(struct triangulateio**)&outPtr;	
-	char* fl = (char*)(*env)->GetStringUTFChars(env, flags, 0);
-	
-	triangulate(fl, sin, sout, 0);
-	
-	(*env)->ReleaseStringUTFChars(env, flags, fl);
+	REAL** s = *(REAL***)&ptr;
+    *s = (REAL*)(*env)->GetDirectBufferAddress(env, buf);
 }
+
+
+JNIEXPORT jlong JNICALL Java_bits_triangulation_TriangulationData_nNativeAddress
+(JNIEnv *env, jclass clazz, jobject buf)
+{
+    char* data = (*env)->GetDirectBufferAddress(env, buf);
+    return (jlong)data;
+}
+
+
+JNIEXPORT void JNICALL Java_bits_triangulation_TriangulationData_nCopy
+(JNIEnv *env, jclass clazz, jlong src, jlong dst, jint len)
+{
+    memcpy( *(void**)&dst, *(const void**)&src, len );
+}
+
+
+JNIEXPORT void JNICALL Java_bits_triangulation_TriangulationData_nGetFieldOffsets
+(JNIEnv *env, jclass clazz, jlongArray arrObj)
+{
+    jlong *arr = (*env)->GetLongArrayElements( env, arrObj, NULL );
+    
+    arr[ 0] = offsetof( struct triangulateio, pointlist );
+    arr[ 1] = offsetof( struct triangulateio, pointattributelist );
+    arr[ 2] = offsetof( struct triangulateio, pointmarkerlist );
+    arr[ 3] = offsetof( struct triangulateio, numberofpoints );
+    arr[ 4] = offsetof( struct triangulateio, numberofpointattributes );
+    arr[ 5] = offsetof( struct triangulateio, trianglelist );
+    arr[ 6] = offsetof( struct triangulateio, triangleattributelist );
+    arr[ 7] = offsetof( struct triangulateio, trianglearealist );
+    arr[ 8] = offsetof( struct triangulateio, neighborlist );
+    arr[ 9] = offsetof( struct triangulateio, numberoftriangles );
+    arr[10] = offsetof( struct triangulateio, numberofcorners );
+    arr[11] = offsetof( struct triangulateio, numberoftriangleattributes );
+    arr[12] = offsetof( struct triangulateio, segmentlist );
+    arr[13] = offsetof( struct triangulateio, segmentmarkerlist );
+    arr[14] = offsetof( struct triangulateio, numberofsegments );
+    arr[15] = offsetof( struct triangulateio, holelist );
+    arr[16] = offsetof( struct triangulateio, numberofholes );
+    arr[17] = offsetof( struct triangulateio, regionlist );
+    arr[18] = offsetof( struct triangulateio, numberofregions );
+    arr[19] = offsetof( struct triangulateio, edgelist );
+    arr[20] = offsetof( struct triangulateio, edgemarkerlist );
+    arr[21] = offsetof( struct triangulateio, normlist );
+    arr[22] = offsetof( struct triangulateio, numberofedges );
+        
+    (*env)->ReleaseLongArrayElements( env, arrObj, arr, 0 );
+}
+
+
+
 

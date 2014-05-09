@@ -13,6 +13,7 @@ public final class TriangulationLib {
             return;
         }
         System.loadLibrary( "triangulation" );
+        TriangulationData.initClass();
         sInit = true;
     }
 
