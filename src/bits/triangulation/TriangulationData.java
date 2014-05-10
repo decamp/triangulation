@@ -633,7 +633,7 @@ public final class TriangulationData {
     }
 
 
-    public synchronized void dispose() {
+    public synchronized void release() {
         if( mPointer == 0 ) {
             return;
         }
@@ -648,12 +648,12 @@ public final class TriangulationData {
             }
         }
 
-        nFree( p );
+        nFreeTriangleStruct( p );
     }
 
     @Override
     protected void finalize() throws Throwable {
-        dispose();
+        release();
         super.finalize();
     }
 
@@ -697,15 +697,15 @@ public final class TriangulationData {
 
     static void initClass() {
         nGetFieldOffsets( OFFS );
-
-        for( int i = 0; i < OFFS.length; i++ ) {
-            System.out.format( "Field % 2d : % 3d\n", i, OFFS[i] );
-        }
     }
 
 
     static void triangulate( TriangulationData src, String flags, TriangulationData dst ) {
         nTriangulate( src.mPointer, flags, dst.mPointer );
+        // Triangle may copy two pointers from the input struct to the output struct,
+        // so we need to copy those references.
+        dst.mRefs[ FIELD_HOLES ]   = src.mRefs[ FIELD_HOLES ];
+        dst.mRefs[ FIELD_REGIONS ] = src.mRefs[ FIELD_REGIONS ];
     }
 
 
@@ -722,6 +722,8 @@ public final class TriangulationData {
     private static native long nAlloc();
 
     private static native void nFree( long ptr );
+
+    private static native void nFreeTriangleStruct( long ptr );
 
     private static native int nGetInt( long ptr );
 

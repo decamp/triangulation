@@ -85,6 +85,14 @@ JNIEXPORT void JNICALL Java_bits_triangulation_TriangulationData_nFree
 
 /*
  * Class:     bits_triangulation_TriangulationData
+ * Method:    nFreeTriangleStruct
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_bits_triangulation_TriangulationData_nFreeTriangleStruct
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     bits_triangulation_TriangulationData
  * Method:    nGetInt
  * Signature: (J)I
  */

@@ -6,13 +6,12 @@ import java.nio.*;
 /**
  * @author decamp
  */
-public class Test {
+public class TriangulationTest {
 
 
     public static void main( String[] args ) throws Exception {
         test2();
     }
-
 
 
     static void test1() throws Exception {
@@ -82,10 +81,14 @@ public class Test {
             System.out.format( "%d  %d  %d\n", ind.getInt(), ind.getInt(), ind.getInt() );
         }
 
+        d.release();
+
         ImagePanel.showImage( TriangulationRenderer.render( out, 1500, 1500 ) );
 
-        //d.dispose();
-        //out.dispose();
+        out.release();
+
+        System.out.println( "OKAY" );
+
     }
 
 

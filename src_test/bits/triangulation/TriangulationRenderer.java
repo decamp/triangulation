@@ -96,7 +96,6 @@ public class TriangulationRenderer {
         if( data.hasEdges() ) {
             ByteBuffer marks = null;
             if( data.hasEdgeMarkers() ) {
-                System.out.println( "EDGE MARKERS!" );
                 marks = data.copyEdgeMarkers();
             }
 
@@ -121,7 +120,6 @@ public class TriangulationRenderer {
         if( data.hasSegments() ) {
             ByteBuffer marks = null;
             if( data.hasSegmentMarkers() ) {
-                System.out.println( "SEGMENT MARKERS!" );
                 marks = data.copySegmentMarkers();
             }
 

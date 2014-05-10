@@ -32,8 +32,61 @@ JNIEXPORT jlong JNICALL Java_bits_triangulation_TriangulationData_nAlloc
 JNIEXPORT void JNICALL Java_bits_triangulation_TriangulationData_nFree
 (JNIEnv *env, jclass clazz, jlong ptr)
 {
-    free( *(void**)&ptr );
+    trifree( *(void**)&ptr );
 }
+
+JNIEXPORT void JNICALL Java_bits_triangulation_TriangulationData_nFreeTriangleStruct
+(JNIEnv *env, jclass clazz, jlong ptr)
+{
+    if( ptr == 0 ) {
+        return;
+    }
+
+	struct triangulateio* s = *(struct triangulateio**)&ptr;
+        
+    if( s->pointlist ) {
+        trifree( s->pointlist );
+    }
+    if( s->pointattributelist ) {
+        trifree( s->pointattributelist );
+    }
+    if( s->pointmarkerlist ) {
+        trifree( s->pointmarkerlist );
+    }
+    if( s->trianglelist ) {
+        trifree( s->trianglelist );
+    }
+    if( s->trianglearealist ) {
+        trifree( s->trianglearealist );
+    }
+    if( s->neighborlist ) {
+        trifree( s->neighborlist );
+    }
+    if( s->segmentlist ) {
+        trifree( s->segmentlist );
+    }
+    if( s->segmentmarkerlist ) {
+        trifree( s->segmentmarkerlist );
+    }
+    if( s->holelist ) {
+        trifree( s->holelist );
+    }
+    if( s->regionlist ) {
+        trifree( s->regionlist );
+    }
+    if( s->edgelist ) {
+        trifree( s->edgelist );
+    }
+    if( s->edgemarkerlist ) {
+        trifree( s->edgemarkerlist );
+    }
+    if( s->normlist ) {
+        trifree( s->normlist );
+    }
+
+    free( s );
+}
+
 
 
 JNIEXPORT jint JNICALL Java_bits_triangulation_TriangulationData_nGetInt
@@ -94,7 +147,11 @@ JNIEXPORT void JNICALL Java_bits_triangulation_TriangulationData_nSetBuffer
 (JNIEnv *env, jclass clazz, jlong ptr, jobject buf)
 {
 	REAL** s = *(REAL***)&ptr;
-    *s = (REAL*)(*env)->GetDirectBufferAddress(env, buf);
+    if( buf ) {
+        *s = (REAL*)(*env)->GetDirectBufferAddress(env, buf);
+    } else {
+        *s = NULL;
+    }
 }
 
 
