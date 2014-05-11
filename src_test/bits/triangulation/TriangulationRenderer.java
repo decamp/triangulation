@@ -22,7 +22,11 @@ public class TriangulationRenderer {
     }
 
 
-    public static void render( TriangulationData data, Graphics2D g, int w, int h ) {
+    public static void render( TriangulationData data,
+                               Graphics2D g,
+                               int w,
+                               int h )
+    {
         // Compute bounds.
         int[][] verts;
         int[] vertMarks = null;
@@ -63,86 +67,10 @@ public class TriangulationRenderer {
             data.copyPointMarkers().asIntBuffer().get( vertMarks );
         }
 
-
         // Render triangles.
-        if( data.hasTriangles() ) {
-            Color fillColor   = new Color( 0f, 0f, 1f, 0.5f );
-            Color strokeColor = new Color( 0.5f, 0.5f, 1f, 1f );
-            g.setStroke( new BasicStroke( 1f ) );
-            ByteBuffer bb = data.copyTriangles();
-
-            while( bb.remaining() >= 12 ) {
-                Path2D path = new Path2D.Double();
-
-                for( int i = 0; i < 3; i++ ) {
-                    int[] v = verts[bb.getInt()];
-                    if( i == 0 ) {
-                        path.moveTo( v[0], v[1] );
-                    } else {
-                        path.lineTo( v[0], v[1] );
-                    }
-                }
-
-                path.closePath();
-                g.setColor( fillColor );
-                g.fill( path );
-                g.setColor( strokeColor );
-                g.draw( path );
-            }
-        }
-
-
-        // Render edges.
-        if( data.hasEdges() ) {
-            ByteBuffer marks = null;
-            if( data.hasEdgeMarkers() ) {
-                marks = data.copyEdgeMarkers();
-            }
-
-            g.setStroke( new BasicStroke( 3f ) );
-            ByteBuffer bb = data.copyEdges();
-
-            while( bb.remaining() >= 8 ) {
-                int[] a = verts[ bb.getInt() ];
-                int[] b = verts[ bb.getInt() ];
-
-                if( marks == null ) {
-                    g.setColor( Color.GREEN );
-                } else {
-                    g.setColor( markerColor( marks.getInt() ) );
-                }
-
-                g.drawLine( a[0], a[1], b[0], b[1] );
-            }
-        }
-
-        // Render segments.
-        if( data.hasSegments() ) {
-            ByteBuffer marks = null;
-            if( data.hasSegmentMarkers() ) {
-                marks = data.copySegmentMarkers();
-            }
-
-            g.setStroke( new BasicStroke( 3f ) );
-            g.setColor( new Color( 1f, 1f, 0f, 0.5f ) );
-            ByteBuffer bb = data.copySegments();
-
-            while( bb.remaining() >= 8 ) {
-                int ia = bb.getInt();
-                int ib = bb.getInt();
-                int[] a = verts[ ia ];
-                int[] b = verts[ ib ];
-
-                if( marks == null ) {
-                    g.setColor( Color.GREEN );
-                } else {
-                    g.setColor( markerColor( marks.getInt() ) );
-                }
-
-                g.drawLine( a[0], a[1], b[0], b[1] );
-            }
-        }
-
+        renderTris( data, verts, g, w, h );
+        //renderEdges( data, verts, g, w, h );
+        //renderSegments( data, verts, g, w, h );
 
         // Render points.
         {
@@ -162,18 +90,154 @@ public class TriangulationRenderer {
 
         }
 
-        // Render Holes
-        if( data.hasHoles() ) {
-            g.setColor( new Color( 1f, 0f, 0f, 0.8f ) );
-            ByteBuffer bb = data.copyHoles();
-            while( bb.remaining() >= 16 ) {
-                int x = m.x( bb.getDouble() );
-                int y = m.y( bb.getDouble() );
-                g.fillOval( x - 2, y - 2, 5, 5 );
+        renderHoles( data, m, g, w, h );
+
+    }
+
+
+    static void renderTris( TriangulationData data, int[][] verts, Graphics2D g, int w, int h ) {
+        if( !data.hasTriangles() ) {
+            return;
+        }
+
+        Color fillColor   = new Color( 0f, 0f, 1f, 0.5f );
+        Color strokeColor = new Color( 0.5f, 0.5f, 1f, 1f );
+        g.setStroke( new BasicStroke( 1f ) );
+        ByteBuffer bb = data.copyTriangles();
+
+        // Fill tris.
+        g.setColor( fillColor );
+        while( bb.remaining() >= 12 ) {
+            Path2D path = new Path2D.Double();
+            for( int i = 0; i < 3; i++ ) {
+                int[] v = verts[bb.getInt()];
+                if( i == 0 ) {
+                    path.moveTo( v[0], v[1] );
+                } else {
+                    path.lineTo( v[0], v[1] );
+                }
+            }
+
+            path.closePath();
+            g.fill( path );
+        }
+
+        bb.flip();
+        // Stroke tris.
+
+        g.setStroke( new BasicStroke( 3f ) );
+
+        if( data.hasTriangleNeighbors() ) {
+            ByteBuffer nb = data.copyTriangleNeighbors();
+            while( bb.remaining() >= 12 ) {
+                int[] a = verts[bb.getInt()];
+                int[] b = verts[bb.getInt()];
+                int[] c = verts[bb.getInt()];
+
+                int mbc  = nb.getInt();
+                int mca  = nb.getInt();
+                int mab  = nb.getInt();
+
+
+
+                g.setColor( markerColor( mab < 0 ? 1 : 0 ) );
+                g.drawLine( a[0], a[1], b[0], b[1] );
+                g.setColor( markerColor( mbc < 0 ? 1 : 0 ) );
+                g.drawLine( b[0], b[1], c[0], c[1] );
+                g.setColor( markerColor( mca < 0 ? 1 : 0 ) );
+                g.drawLine( c[0], c[1], a[0], a[1] );
+            }
+        } else {
+            while( bb.remaining() >= 12 ) {
+                int[] a = verts[bb.getInt()];
+                int[] b = verts[bb.getInt()];
+                int[] c = verts[bb.getInt()];
+                g.setColor( markerColor( 0 ) );
+                g.drawLine( a[0], a[1], b[0], b[1] );
+                g.drawLine( b[0], b[1], c[0], c[1] );
+                g.drawLine( c[0], c[1], a[0], a[1] );
             }
         }
 
+        g.setStroke( new BasicStroke( 1f ) );
     }
+
+
+    static void renderEdges( TriangulationData data, int[][] verts, Graphics2D g, int w, int h ) {
+        if( !data.hasEdges() ) {
+            return;
+        }
+
+        ByteBuffer marks = null;
+        if( data.hasEdgeMarkers() ) {
+            marks = data.copyEdgeMarkers();
+        }
+
+        g.setStroke( new BasicStroke( 3f ) );
+        ByteBuffer bb = data.copyEdges();
+
+        while( bb.remaining() >= 8 ) {
+            int[] a = verts[ bb.getInt() ];
+            int[] b = verts[ bb.getInt() ];
+
+            if( marks == null ) {
+                g.setColor( Color.GREEN );
+            } else {
+                g.setColor( markerColor( marks.getInt() ) );
+            }
+
+            g.drawLine( a[0], a[1], b[0], b[1] );
+        }
+    }
+
+
+    static void renderSegments( TriangulationData data, int[][] verts, Graphics2D g, int w, int h ) {
+        if( !data.hasSegments() ) {
+            return;
+        }
+
+        ByteBuffer marks = null;
+        if( data.hasSegmentMarkers() ) {
+            marks = data.copySegmentMarkers();
+        }
+
+        g.setStroke( new BasicStroke( 3f ) );
+        g.setColor( new Color( 1f, 1f, 0f, 0.5f ) );
+        ByteBuffer bb = data.copySegments();
+
+        while( bb.remaining() >= 8 ) {
+            int ia = bb.getInt();
+            int ib = bb.getInt();
+            int[] a = verts[ ia ];
+            int[] b = verts[ ib ];
+
+            if( marks == null ) {
+                g.setColor( Color.GREEN );
+            } else {
+                g.setColor( markerColor( marks.getInt() ) );
+            }
+
+            g.drawLine( a[0], a[1], b[0], b[1] );
+        }
+    }
+
+
+    static void renderHoles( TriangulationData data, Mapper m, Graphics2D g, int w, int h ) {
+        if( !data.hasHoles() ) {
+            return;
+        }
+
+        g.setColor( new Color( 1f, 0f, 0f, 0.8f ) );
+        ByteBuffer bb = data.copyHoles();
+        while( bb.remaining() >= 16 ) {
+            int x = m.x( bb.getDouble() );
+            int y = m.y( bb.getDouble() );
+            g.fillOval( x - 2, y - 2, 5, 5 );
+        }
+    }
+
+
+
 
 
     private static Color markerColor( int m ) {

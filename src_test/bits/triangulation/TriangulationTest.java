@@ -68,7 +68,8 @@ public class TriangulationTest {
 
         Triangulation t = new Triangulation();
         t.verbose( true );
-        t.planarStraightLineGraph( true );
+        t.isPlanarStraightLineGraph( true );
+        t.computeNeighbors( true );
         //t.computeEdges( true );
 
         TriangulationData out = TriangulationData.create();
