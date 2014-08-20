@@ -558,7 +558,7 @@ public final class TriangulationData {
 
     public void setPoints( ByteBuffer buf ) {
         setBufferField( FIELD_POINTS, buf );
-        nSetInt( mPointer + OFFS[FIELD_POINT_COUNT], buf.remaining() / ( 2 * SIZE_REAL ) );
+        nSetInt( mPointer + OFFS[FIELD_POINT_COUNT], buf == null ? 0 : buf.remaining() / ( 2 * SIZE_REAL ) );
     }
 
 
