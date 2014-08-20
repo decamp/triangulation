@@ -575,7 +575,7 @@ public final class TriangulationData {
 
     public void setTriangles( ByteBuffer buf ) {
         setBufferField( FIELD_TRIS, buf );
-        nSetInt( mPointer + OFFS[FIELD_TRI_COUNT], buf.remaining() / ( 3 * SIZE_INT ) );
+        nSetInt( mPointer + OFFS[FIELD_TRI_COUNT], buf == null ? 0 : buf.remaining() / ( 3 * SIZE_INT ) );
     }
 
 
@@ -596,7 +596,7 @@ public final class TriangulationData {
 
     public void setSegments( ByteBuffer buf ) {
         setBufferField( FIELD_SEGMENTS, buf );
-        nSetInt( mPointer + OFFS[FIELD_SEGMENT_COUNT], buf.remaining() / ( 2 * SIZE_INT ) );
+        nSetInt( mPointer + OFFS[FIELD_SEGMENT_COUNT], buf == null ? 0 : buf.remaining() / ( 2 * SIZE_INT ) );
     }
 
 
@@ -607,19 +607,19 @@ public final class TriangulationData {
 
     public void setHoles( ByteBuffer buf ) {
         setBufferField( FIELD_HOLES, buf );
-        nSetInt( mPointer + OFFS[FIELD_HOLE_COUNT], buf.remaining() / ( 2 * SIZE_REAL ) );
+        nSetInt( mPointer + OFFS[FIELD_HOLE_COUNT], buf == null ? 0 : buf.remaining() / ( 2 * SIZE_REAL ) );
     }
 
 
     public void setRegions( ByteBuffer buf ) {
         setBufferField( FIELD_REGIONS, buf );
-        nSetInt( mPointer + OFFS[FIELD_SEGMENTS], buf.remaining() / ( 4 * SIZE_REAL ) );
+        nSetInt( mPointer + OFFS[FIELD_SEGMENTS], buf == null ? 0 : buf.remaining() / ( 4 * SIZE_REAL ) );
     }
 
 
     public void setEdges( ByteBuffer buf ) {
         setBufferField( FIELD_EDGES, buf );
-        nSetInt( mPointer + OFFS[FIELD_EDGE_COUNT], buf.remaining() / ( 2 * SIZE_INT ) );
+        nSetInt( mPointer + OFFS[FIELD_EDGE_COUNT], buf == null ? 0 : buf.remaining() / ( 2 * SIZE_INT ) );
     }
 
 
