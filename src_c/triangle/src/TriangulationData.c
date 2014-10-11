@@ -13,7 +13,7 @@ JNIEXPORT void JNICALL Java_bits_triangulation_TriangulationData_nTriangulate
 (JNIEnv *env, jclass clazz, jlong inPtr, jstring flags, jlong outPtr)
 {
 	struct triangulateio* sin  = *(struct triangulateio**)&inPtr;
-	struct triangulateio* sout = *(struct triangulateio**)&outPtr;	
+	struct triangulateio* sout = *(struct triangulateio**)&outPtr;
 	char* fl = (char*)(*env)->GetStringUTFChars(env, flags, 0);
 	triangulate(fl, sin, sout, 0);
 	(*env)->ReleaseStringUTFChars( env, flags, fl );

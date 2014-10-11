@@ -30,7 +30,7 @@ export SYS_ROOT ?= /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.p
 DEBUG_CXXFLAGS := -D_REENTRANT -dynamic -fPIC -fno-common -Wall -g3
 DEBUG_LDFLAGS := -D_REENTRANT -dynamic -fPIC -fno-common -Wall -g3
 
-RELEASE_CXXFLAGS := -DTRILIBRARY -D_REENTRANT -dynamic -fPIC -fno-common -Wall -O3 -force_cpusubtype_ALL
+RELEASE_CXXFLAGS := -DTRILIBRARY -D_REENTRANT -dynamic -fPIC -fno-common -Wall -O3
 RELEASE_CXXFLAGS := $(RELEASE_CXXFLAGS) -isysroot $(SYS_ROOT) $(ARCH)
 RELEASE_CXXFLAGS := $(RELEASE_CXXFLAGS) -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
 
@@ -47,7 +47,7 @@ FINAL_TARGET := $(OUTPUT_DIR)/$(MY_NAME).jnilib
 SOURCE_DIRS := src
 LIB_NAMES := 
 INCLUDE_NAMES := 
-FRAMEWORKS := -framework JavaVM
+FRAMEWORKS := 
 EXT_INCLUDES := 
 EXT_LIBS := 
 
