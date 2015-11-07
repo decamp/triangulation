@@ -1,13 +1,9 @@
-#Hidden files and emacs cruft
-**/.DS_Store
+.*
+!.gitignore
 *~
+*.iml
 
-.settings
-.classpath
-.project
-/build*/
-/dist/
-/resources_ext/
-/*.iml
-scratch/
-
+/scratch/
+/target/
+/ext/
+/ant

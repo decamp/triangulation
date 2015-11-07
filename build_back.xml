@@ -1,6 +1,6 @@
 <project name="triangulation" default="jar" basedir=".">
   <description>
-    Wrapper for Triangulation Library
+    Triangulation Library
   </description>
   
   <!-- Version control system. Options: "git", "svn", or "unversioned". -->
@@ -10,21 +10,20 @@
     "no-source"       Do not package source
     "source-in-jar"   Include source in same jar as class files.
     "source-own-jar"  Package source into separate jar file. -->
-  <target name="include-source" depends="source-own-jar" />
+  <target name="include-source" depends="source-in-jar" />
   
   <property name="domain.name"    value="bits" />  
-  <property name="jvm.source"     value="1.6" />
-  <property name="jvm.target"     value="1.6" />
-  <property name="dst.dir"        value="target" />
+  <property name="jvm.target"     value="1.5" />
+  <property name="dst.dir"        value="dist" />
   <property name="dst.name"       value="${domain.name}_${ant.project.name}" />
-  <property name="src.dir"        value="src/main/java" />
-  <property name="resources.dir"  value="src/main/resources" />
-  <property name="build.dir"      value="scratch/main/java" />
-  <property name="test.src.dir"   value="src/test/java" />
-  <property name="test.build.dir" value="scratch/test/java" />
+  <property name="src.dir"        value="src" />
+  <property name="resources.dir"  value="resources" />
+  <property name="build.dir"      value="build" />
+  <property name="test.src.dir"   value="src_test" />
+  <property name="test.build.dir" value="build_test" />
   <property name="lib.dir"        value="lib" />
-  <property name="buildtools.dir" value="buildtools" />
-  <property name="meta.build.dir" value="scratch/ant" />
+  <property name="buildtools.dir" value="resources_build" />
+  <property name="meta.build.dir" value="build_test/ant" />
   
   <property name="app.name"       value="" />
   <property name="app.main"       value="" />
@@ -62,7 +61,7 @@
   
   <target name="compile" depends="init" description="Compile source" >
     <mkdir dir="${build.dir}" />
-    <javac srcdir="${src.dir}" destdir="${build.dir}" debug="yes" fork="yes" source="${jvm.source}" target="${jvm.target}" includeantruntime="false">
+    <javac srcdir="src" destdir="${build.dir}" debug="yes" fork="yes" target="${jvm.target}" includeantruntime="false">
       <classpath> 
         <path refid="classpath"/>
       </classpath>
@@ -72,7 +71,7 @@
     
   <target name="compile-test" depends="compile" description="Compile test source" >
     <mkdir dir="${test.build.dir}" />
-    <javac srcdir="${test.src.dir}" destdir="${test.build.dir}" debug="yes" nowarn="true" source="${jvm.source}" target="${jvm.target}" includeantruntime="false">
+    <javac srcdir="${test.src.dir}" destdir="${test.build.dir}" debug="yes" nowarn="true" target="${jvm.target}" includeantruntime="false">
       <classpath>
         <path refid="classpath" />
         <pathelement location="${build.dir}" />

@@ -753,7 +753,6 @@ public final class TriangulationData {
             return;
         }
         System.loadLibrary( "triangulation" );
-        TriangulationData.initClass();
         sInit = true;
         nGetFieldOffsets( OFFS );
     }
