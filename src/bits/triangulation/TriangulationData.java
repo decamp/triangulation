@@ -179,7 +179,7 @@ import java.nio.*;
 public final class TriangulationData {
 
     public static TriangulationData create() {
-        TriangulationLib.init();
+        initClass();
         long p = nAlloc();
         if( p == 0 ) {
             throw new OutOfMemoryError();
@@ -575,7 +575,7 @@ public final class TriangulationData {
 
     public void setTriangles( ByteBuffer buf ) {
         setBufferField( FIELD_TRIS, buf );
-        nSetInt( mPointer + OFFS[FIELD_TRI_COUNT], buf == null ? 0 : buf.remaining() / ( 3 * SIZE_INT ) );
+        nSetInt( mPointer + OFFS[FIELD_TRI_COUNT], buf == null ? 0 : buf.remaining() / (3 * SIZE_INT) );
     }
 
 
@@ -596,7 +596,7 @@ public final class TriangulationData {
 
     public void setSegments( ByteBuffer buf ) {
         setBufferField( FIELD_SEGMENTS, buf );
-        nSetInt( mPointer + OFFS[FIELD_SEGMENT_COUNT], buf == null ? 0 : buf.remaining() / ( 2 * SIZE_INT ) );
+        nSetInt( mPointer + OFFS[FIELD_SEGMENT_COUNT], buf == null ? 0 : buf.remaining() / (2 * SIZE_INT) );
     }
 
 
@@ -607,7 +607,7 @@ public final class TriangulationData {
 
     public void setHoles( ByteBuffer buf ) {
         setBufferField( FIELD_HOLES, buf );
-        nSetInt( mPointer + OFFS[FIELD_HOLE_COUNT], buf == null ? 0 : buf.remaining() / ( 2 * SIZE_REAL ) );
+        nSetInt( mPointer + OFFS[FIELD_HOLE_COUNT], buf == null ? 0 : buf.remaining() / (2 * SIZE_REAL) );
     }
 
 
@@ -650,6 +650,56 @@ public final class TriangulationData {
 
         nFreeTriangleStruct( p );
     }
+
+    /**
+     * Switches for the triangulator.
+     * poly: -p switch.
+     * refine: -r switch.
+     * quality: -q switch.
+     * minangle: minimum angle bound, specified after -q switch.
+     * goodangle: cosine squared of minangle.
+     * offconstant: constant used to place off-center Steiner points.
+     * vararea: -a switch without number.
+     * fixedarea: -a switch with number.
+     * maxarea: maximum area bound, specified after -a switch.
+     * usertest: -u switch.
+     * regionattrib: -A switch.  convex: -c switch.
+     * weighted: 1 for -w switch, 2 for -W switch.  jettison: -j switch
+     * firstnumber: inverse of -z switch.  All items are numbered starting from `firstnumber'.
+     * edgesout: -e switch.
+     * voronoi: -v switch.
+     * neighbors: -n switch.
+     * geomview: -g switch.
+     * nobound: -B switch.
+     * nopolywritten: -P switch.
+     * nonodewritten: -N switch.
+     * noelewritten: -E switch.
+     * noiterationnum: -I switch.
+     * noholes: -O switch.
+     * noexact: -X switch.
+     * order: element order, specified after -o switch.
+     * nobisect: count of how often -Y switch is selected.
+     * steiner: maximum number of Steiner points, specified after -S switch.
+     * incremental: -i switch.
+     * sweepline: -F switch.
+     * dwyer: inverse of -l switch.
+     * splitseg: -s switch.
+     * conformdel: -D switch.
+     * docheck: -C switch.
+     * quiet: -Q switch.
+     * verbose: count of how often -V switch is selected.
+     * usesegments: -p, -r, -q, or -c switch; determines whether segments are used at all.
+     * Read the instructions to find out the meaning of these switches.
+     */
+    public static void triangulate( TriangulationData src, String flags, TriangulationData dst ) {
+        nTriangulate( src.mPointer, flags, dst.mPointer );
+        // Triangle may copy two pointers from the input struct to the output struct,
+        // so we need to copy those references.
+        dst.mRefs[ FIELD_HOLES ]   = src.mRefs[ FIELD_HOLES ];
+        dst.mRefs[ FIELD_REGIONS ] = src.mRefs[ FIELD_REGIONS ];
+    }
+
+
 
     @Override
     protected void finalize() throws Throwable {
@@ -695,17 +745,17 @@ public final class TriangulationData {
     }
 
 
+    private static boolean sInit = false;
+
+
     static void initClass() {
+        if( sInit ) {
+            return;
+        }
+        System.loadLibrary( "triangulation" );
+        TriangulationData.initClass();
+        sInit = true;
         nGetFieldOffsets( OFFS );
-    }
-
-
-    static void triangulate( TriangulationData src, String flags, TriangulationData dst ) {
-        nTriangulate( src.mPointer, flags, dst.mPointer );
-        // Triangle may copy two pointers from the input struct to the output struct,
-        // so we need to copy those references.
-        dst.mRefs[ FIELD_HOLES ]   = src.mRefs[ FIELD_HOLES ];
-        dst.mRefs[ FIELD_REGIONS ] = src.mRefs[ FIELD_REGIONS ];
     }
 
 

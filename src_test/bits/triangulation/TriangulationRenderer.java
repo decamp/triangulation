@@ -100,8 +100,7 @@ public class TriangulationRenderer {
             return;
         }
 
-        Color fillColor   = new Color( 0f, 0f, 1f, 0.5f );
-        Color strokeColor = new Color( 0.5f, 0.5f, 1f, 1f );
+        Color fillColor = new Color( 0f, 0f, 1f, 0.5f );
         g.setStroke( new BasicStroke( 1f ) );
         ByteBuffer bb = data.copyTriangles();
 

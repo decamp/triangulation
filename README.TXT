@@ -1,6 +1,7 @@
 THE TRIANGLE LIBRARY:
-Wrapper for Jonathan Richard Shewchuk's Triangle library.  See src_c/README for more information.
-Triangle provides fast triangulation of a set of points, constrained by edges.
+This is a Java Wrapper for Jonathan Richard Shewchuk's (Triangle library)[https://www.cs.cmu.edu/~quake/triangle.html].
+See src_c/README for more information on the library itself. In short, Triangle performs fast triangulations
+of a set of points with different constraints.
 
 
 BUILDING:
@@ -10,13 +11,8 @@ BUILDING:
 RUNTIME:
 1. All files in "lib" and "dist" directories (after build) are required in classpath. 
 2. You'll need the libtriangle.jnilib file.  
-Remember to add "-Djava.library.path=<lib dir>" to your JVM flags.
-
-DEPENDENCIES:
+3. Remember to add "-Djava.library.path=<lib dir>" to your JVM flags.
 
 
-KNOWN ISSUES:
-
-
-AUTHOR:
+WRAPPER BY:
 Philip DeCamp

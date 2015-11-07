@@ -14,11 +14,6 @@ public class TriangulationTest {
     }
 
 
-    static void test1() throws Exception {
-        TriangulationData d = TriangulationData.create();
-    }
-
-
     static void test2() throws Exception {
         TriangulationData d = TriangulationData.create();
 
