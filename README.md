@@ -1,6 +1,6 @@
 THE TRIANGLE LIBRARY:
 This is a Java Wrapper for Jonathan Richard Shewchuk's (Triangle library)[https://www.cs.cmu.edu/~quake/triangle.html].
-See src_c/README for more information on the library itself. In short, Triangle performs fast triangulations of
+See src/main/c/README for more information on the library itself. In short, Triangle performs fast triangulations of
 point sets and planar straight line graphs with support for different constraint types.
 
 
