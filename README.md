@@ -8,13 +8,13 @@ different constraint types. See [src/main/c/README](src/main/c/README) for more 
 ### Build
 
 **Java**  
-1. $ ant
+$ ant
 
 **C**  
 The C code is precompiled for OS X and located in lib/libtriangulation.jnilib.  
 To recompile:   
-1. $ cd src/main/c  
-2. $ make  
+$ cd src/main/c  
+$ make  
 
 To compile for other platforms, you'll need to update the makefile.
 
