@@ -31,7 +31,7 @@ LDFLAGS := $(LDFLAGS) -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
 
 OUTPUT_DIR := $(LIB_OUTPUT)
 FINAL_TARGET := $(OUTPUT_DIR)/$(MY_NAME).jnilib
-SOURCE_DIRS := src
+SOURCE_DIRS := .
 
 C_SOURCES := $(foreach dir, $(SOURCE_DIRS), $(wildcard $(dir)/*.c))
 INCLUDES := $(foreach dir, $(SOURCE_DIRS), -I$(dir))
