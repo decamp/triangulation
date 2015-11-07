@@ -1,13 +1,12 @@
-The source code has two parts: Shewchuk's Triangle Library and the wrapper code.
-
-Shewchuk's Triangle Library is provided by its author under a restrictive open source license
-that is included below and also attached to the primary source file, "src/main/c/triangle.c".
-This license covers three files:
+Shewchuk's Triangle Library is provided by its author under the license included in
+"src/main/c/triangle.c", which is excerpted below. Three of the files distributed
+under this license are included in this repository in their original form:
 - src/main/c/triangle.c
 - src/main/c/triangle.h
 - src/main/c/README
 
-All other files were created by Philip DeCamp and are released into the public domain.
+All files in this repository that are not covered by this license were created by
+Philip DeCamp and are released into the public domain.
 
 
 --- Shewchuk's Triangle Library License --
